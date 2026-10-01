@@ -23,8 +23,8 @@ SENTENCE_BREAK_WINDOW = 3
 MIN_LEFTOVER_WORDS = 4
 
 # Validated venv and reference voice paths
-POCKET_DIR = Path(r"d:/antigravity test/faceless-studio")
-POCKET_PY = POCKET_DIR / ".venv-tts" / "Scripts" / "python.exe"
+POCKET_DIR = Path(os.environ.get("POCKET_TTS_DIR", r"d:/antigravity test/faceless-studio"))
+POCKET_PY = Path(os.environ.get("POCKET_TTS_VENV", str(POCKET_DIR / ".venv-tts" / "Scripts" / "python.exe")))
 LOCAL_TTS = POCKET_DIR / "lib" / "local_tts.py"
 VOICE_REFS = {
     "oxley": (

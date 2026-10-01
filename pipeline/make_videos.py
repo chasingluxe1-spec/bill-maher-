@@ -416,8 +416,12 @@ def run_promote(slug: str, work_dir: Path, qc_passed: bool) -> None:
     log_msg(slug, "promote", f"SUCCESS: {slug} promoted and recorded in covered_titles.log")
 
 
-def process_slug(slug: str) -> bool:
-    """Process a single case slug through all pipeline stages."""
+def process_slug(slug: str, plan_only: bool = False) -> bool:
+    """Process a single case slug through all pipeline stages.
+
+    plan_only stops after the script stage (research, register, script) so the
+    planning half can run in the cloud and the voice/render half on a local PC.
+    """
     work_dir = ROOT / "work" / slug
     work_dir.mkdir(parents=True, exist_ok=True)
     log_msg(slug, "pipeline", f"--- Starting pipeline for slug: {slug} ---")
@@ -425,6 +429,9 @@ def process_slug(slug: str) -> bool:
     run_research(slug, work_dir)
     run_register(slug, work_dir)
     run_script(slug, work_dir)
+    if plan_only:
+        log_msg(slug, "pipeline", "--- plan-only: stopped after script; run without --plan-only on the render PC ---")
+        return True
     run_voice(slug, work_dir)
     run_srt(slug, work_dir)
     run_media_plan(slug, work_dir)
@@ -441,8 +448,10 @@ def process_slug(slug: str) -> bool:
 
 def main() -> None:
     args = sys.argv[1:]
+    plan_only = "--plan-only" in args
+    args = [a for a in args if a != "--plan-only"]
     if not args or "--help" in args or "-h" in args:
-        print("Usage: python pipeline/make_videos.py <slug1> [<slug2> ...]")
+        print("Usage: python pipeline/make_videos.py [--plan-only] <slug1> [<slug2> ...]")
         print("Runs the crime documentary pipeline for one or more case slugs.")
         sys.exit(0)
 
@@ -452,7 +461,7 @@ def main() -> None:
 
     for slug in args:
         try:
-            qc_passed = process_slug(slug)
+            qc_passed = process_slug(slug, plan_only)
             if qc_passed:
                 succeeded.append(slug)
             else:
