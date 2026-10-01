@@ -1,0 +1,9 @@
+# Orchestrator-side pipeline deps (NOT the TTS venv — that lives in faceless-studio\.venv-tts).
+# Install into the project's own venv: py -m venv .venv ; .venv\Scripts\pip install -r requirements.txt
+requests>=2.31
+numpy>=1.26
+Pillow>=10.0
+scipy>=1.11
+python-dotenv>=1.0
+mutagen>=1.47
+# ffmpeg/ffprobe are used as external binaries (bundled under faceless-studio\tools\media or on PATH).
